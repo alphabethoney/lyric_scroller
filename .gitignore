@@ -1,0 +1,10 @@
+# 生成物 / 缓存
+lyric_scroller/lyrics.h
+tools/__pycache__/
+_build/
+
+# 有版权、或许可证与本仓库不兼容，不随仓库分发
+#   - 歌词文件（.lrc）：版权归原权利人
+#   - 点阵字库（GNU Unifont，GPL + 字体嵌入例外）：构建时自动下载
+lrc/*.lrc
+tools/unifont-*.hex.gz
