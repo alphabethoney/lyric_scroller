@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Download Unifont font
+        run: |
+          curl -sSL -o tools/unifont-18.0.01.hex.gz \
+            https://unifoundry.com/pub/unifont/unifont-18.0.01/font-builds/unifont-18.0.01.hex.gz
+
+      - name: Run generator on a test LRC
+        run: |
+          mkdir -p lrc
+          printf '[00:00.00]第一句\n[00:02.00]这是第二句歌词\n[00:04.00]一二三四五六七八九十\n[00:06.00]这是很长的一句歌词用来测试折行\n' > lrc/test.lrc
+          python tools/lrc2data.py lrc/test.lrc
+
+      - name: Verify lyrics.h was generated
+        run: test -s lyric_scroller/lyrics.h
