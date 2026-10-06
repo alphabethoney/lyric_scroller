@@ -83,16 +83,16 @@ arduino-cli upload -p COM6 --fqbn arduino:avr:uno lyric_scroller
 
 ## 从源码构建（clone 后）
 
-仓库**不随带**歌词和点阵字库（原因见「许可」）。clone 后首次构建：
+仓库已随带**示例歌词** `lrc/fangxia.lrc` 和**点阵字库**（若字库缺失，`build.ps1` 会自动补下）。clone 后：
 
-1. 把 `.lrc` 放进 `lrc/`；
-2. `.\build.ps1` —— 首次运行会**自动下载** GNU Unifont 字库，再生成、编译、烧录。
+1. （可选）用你的 `.lrc` 替换 `lrc/fangxia.lrc`；
+2. `.\build.ps1` —— 生成数据 → 编译 → 烧录。
 
 ## 许可
 
 - 本仓库代码（播放器、生成工具、build.ps1）：**MIT**，见 `LICENSE`；
-- 点阵字库 GNU Unifont：**GPL + 字体嵌入例外**，不随仓库分发，构建时自动下载；
-- 歌词文件（`.lrc`）：版权归原权利人，不随仓库分发，请自行放入 `lrc/`。
+- 点阵字库 `tools/unifont-*.hex.gz`：**GNU Unifont，GPL + 字体嵌入例外**，见 `tools/UNIFONT-LICENSE.md`；
+- 示例歌词 `lrc/fangxia.lrc`：版权归《放下》词曲作者，仅作学习演示。
 
 ## 说明
 
