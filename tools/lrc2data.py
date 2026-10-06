@@ -18,7 +18,12 @@ import lyric_engine as eng
 
 TS_RE = re.compile(r'\[(\d+):(\d+)(?:[.:](\d+))?\]')
 META_RE = re.compile(r'\[(ti|ar|al|by|re|ve|offset):([^\]]*)\]')
-SKIP_MARKERS = ("：", "下载歌词")
+
+
+def is_credit(text):
+    """过滤片头制作信息：含冒号（作词: / 作曲：…）或「下载歌词」的行。
+    歌词正文几乎不含冒号，故按冒号整行过滤。"""
+    return "下载歌词" in text or ":" in text or "：" in text
 
 
 def _read_lrc_text(path):
@@ -52,7 +57,7 @@ def parse_lrc(path):
         if not times:
             continue
         text = TS_RE.sub("", line).strip()
-        if not text or any(k in text for k in SKIP_MARKERS):
+        if not text or is_credit(text):
             continue
         h, mm, frac = times[0]
         ms = int(h) * 60000 + int(mm) * 1000
