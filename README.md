@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 一个 **Arduino UNO + 0.96" OLED（128×64）** 的歌词滚动器：输入标准 `.lrc` 文件，
-按歌词自带的时间戳逐句滚动，中文用 **GNU Unifont 点阵**（16×16，无抗锯齿、笔画永不消失），
+按歌词自带的时间戳逐句滚动，中文用 **GNU Unifont 点阵**（16×16），
 长句自动**语义折行**（不切词），切换带**从屏幕中间向两边展开**的动画。
 
 ## 目录结构
