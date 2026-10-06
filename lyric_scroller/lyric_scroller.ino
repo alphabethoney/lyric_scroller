@@ -26,6 +26,7 @@
 #define TRANSITION 1         // 0 = 直接切换(最准时) 1 = 中间展开 2 = 溶解
 #define EXPAND_STEP 4
 #define FADE_MS    26
+#define MIN_ANIM_MS 600      // 句长小于此值(ms)时跳过动画、瞬时切换，避免跳句
 #define TAIL_MS    6000      // 最后一页额外停留多久再循环
 #define LOOP       1         // 1 = 播完循环；0 = 停在最后一页
 
@@ -155,6 +156,12 @@ uint8_t findPage(uint32_t elapsed) {
   return 0;
 }
 
+// 第 p 句还剩多少毫秒（到下一句）；末句返回一个很大的值
+uint32_t pageRemain(uint8_t p) {
+  if (p + 1 >= PAGE_COUNT) return 0xFFFFFFFF;
+  return pgm_read_dword(&PAGE_TIME[p + 1]) - pgm_read_dword(&PAGE_TIME[p]);
+}
+
 uint32_t t0 = 0;
 bool paused = false;
 uint32_t pauseStart = 0;
@@ -219,6 +226,7 @@ void loop() {
   uint8_t page = findPage(elapsed);
   if (page != cur || first) {
     if (first) drawPage(page);
+    else if (pageRemain(page) < MIN_ANIM_MS) drawPage(page);   // 太密：瞬时切换
     else transition(cur, page);
     first = false;
     cur = page;

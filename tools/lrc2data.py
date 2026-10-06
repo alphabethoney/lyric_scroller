@@ -21,33 +21,44 @@ META_RE = re.compile(r'\[(ti|ar|al|by|re|ve|offset):([^\]]*)\]')
 SKIP_MARKERS = ("：", "下载歌词")
 
 
+def _read_lrc_text(path):
+    """读文件并自动识别编码：优先 UTF-8，失败回退 GBK。"""
+    with open(path, "rb") as f:
+        raw = f.read()
+    for enc in ("utf-8-sig", "gbk"):
+        try:
+            return raw.decode(enc)
+        except UnicodeDecodeError:
+            continue
+    return raw.decode("utf-8", errors="replace")   # 兜底，避免崩溃
+
+
 def parse_lrc(path):
     """解析 .lrc → [(ms, 歌词文本)]，按时间排序，应用 offset。"""
     entries, offset = [], 0
-    with open(path, encoding="utf-8-sig", errors="replace") as f:
-        for line in f:
-            line = line.strip()
-            if not line:
-                continue
-            m = META_RE.match(line)
-            if m:
-                if m.group(1).lower() == "offset":
-                    try:
-                        offset = int(m.group(2).strip())
-                    except ValueError:
-                        pass
-                continue
-            times = TS_RE.findall(line)
-            if not times:
-                continue
-            text = TS_RE.sub("", line).strip()
-            if not text or any(k in text for k in SKIP_MARKERS):
-                continue
-            h, mm, frac = times[0]
-            ms = int(h) * 60000 + int(mm) * 1000
-            if frac:
-                ms += int(frac) * (100 if len(frac) == 1 else 10 if len(frac) == 2 else 1)
-            entries.append((ms, text))
+    for line in _read_lrc_text(path).splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        m = META_RE.match(line)
+        if m:
+            if m.group(1).lower() == "offset":
+                try:
+                    offset = int(m.group(2).strip())
+                except ValueError:
+                    pass
+            continue
+        times = TS_RE.findall(line)
+        if not times:
+            continue
+        text = TS_RE.sub("", line).strip()
+        if not text or any(k in text for k in SKIP_MARKERS):
+            continue
+        h, mm, frac = times[0]
+        ms = int(h) * 60000 + int(mm) * 1000
+        if frac:
+            ms += int(frac) * (100 if len(frac) == 1 else 10 if len(frac) == 2 else 1)
+        entries.append((ms, text))
     entries.sort()
     return [(max(0, ms + offset), t) for ms, t in entries]
 
