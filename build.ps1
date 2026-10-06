@@ -21,30 +21,19 @@ $Sketch = Join-Path $Root "lyric_scroller"
 # ---- locate Python ----
 function Get-Python {
     if (Get-Command python -ErrorAction SilentlyContinue) { return "python" }
-    $bundled = Get-ChildItem "$env:USERPROFILE\.dsh\dsh-runtimes\*\dependencies\python\python.exe" `
-        -ErrorAction SilentlyContinue | Select-Object -First 1
-    if ($bundled) { return $bundled.FullName }
     throw "Python not found: install Python and add it to PATH"
 }
 
 # ---- locate arduino-cli ----
 $Cli = $null
 if (Get-Command arduino-cli -ErrorAction SilentlyContinue) { $Cli = "arduino-cli" }
-else {
-    foreach ($p in @(
-        "D:\Program Files (x86)\ardiuno\Arduino IDE\resources\app\lib\backend\resources\arduino-cli.exe",
-        "C:\Program Files\Arduino IDE\resources\app\lib\backend\resources\arduino-cli.exe",
-        "C:\Program Files (x86)\Arduino IDE\resources\app\lib\backend\resources\arduino-cli.exe"
-    )) { if (Test-Path $p) { $Cli = $p; break } }
-}
 if (-not $Cli) { throw "arduino-cli not found: install Arduino IDE or add arduino-cli to PATH" }
 
 $Python = Get-Python
 $LrcAbs = Join-Path $Root $Lrc
 
-# ---- Arduino data dirs (override via env) ----
-if (-not $env:ARDUINO_DIRECTORIES_DATA) { $env:ARDUINO_DIRECTORIES_DATA = "E:\Arduino IDE\ArduinoData" }
-if (-not $env:ARDUINO_DIRECTORIES_USER) { $env:ARDUINO_DIRECTORIES_USER = "D:\Desktop\Arduino" }
+# Arduino 数据目录由环境变量 ARDUINO_DIRECTORIES_DATA / ARDUINO_DIRECTORIES_USER 提供
+#（arduino-cli 原生读取；非默认路径时需自行设置）
 
 # ---- port ----
 if (-not $Port) {

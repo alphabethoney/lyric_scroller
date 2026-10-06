@@ -49,17 +49,15 @@ lyric_scroller/
 ### 方式二：分步
 
 1. **放歌词**：把 `.lrc` 放进 `lrc/`；
-2. **生成数据**：`python tools/lrc2data.py "lrc/你的歌词.lrc"`（需要 Python 3 + Pillow）；
+2. **生成数据**：`python tools/lrc2data.py "lrc/你的歌词.lrc"`（Python 3，无第三方依赖）；
 3. **编译烧录**：Arduino IDE 打开 `lyric_scroller/lyric_scroller.ino`，板子选 Arduino Uno、
    端口选 COM，上传。需装 `Adafruit_SSD1306`、`Adafruit_GFX` 两个库。
 
-命令行编译（本机路径）：
+命令行（需 `arduino-cli` 在 PATH）：
 
 ```powershell
-$env:ARDUINO_DIRECTORIES_DATA='E:\Arduino IDE\ArduinoData'
-$env:ARDUINO_DIRECTORIES_USER='D:\Desktop\Arduino'
-& 'D:\Program Files (x86)\ardiuno\Arduino IDE\resources\app\lib\backend\resources\arduino-cli.exe' `
-    compile --fqbn arduino:avr:uno 'lyric_scroller'
+arduino-cli compile --fqbn arduino:avr:uno lyric_scroller
+arduino-cli upload -p COM6 --fqbn arduino:avr:uno lyric_scroller
 ```
 
 ## 使用与对齐
